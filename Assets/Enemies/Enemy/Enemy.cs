@@ -60,6 +60,7 @@ public class Enemy : MonoBehaviour {
 		shouldWait=false;
 
 		FOV=(GameObject)GameObject.Instantiate(FOV);
+		FOV.GetComponent<FOV>().enemy=this;
 
 		currentAngle=FOV.transform.eulerAngles.z;
 
@@ -78,7 +79,7 @@ public class Enemy : MonoBehaviour {
 			currentAngle=Mathf.MoveTowardsAngle(currentAngle, targetAngle, 120*speed*Time.deltaTime);
 			FOV.transform.position=transform.position+Vector3.up/4;
 			FOV.transform.eulerAngles=new Vector3(0,0,currentAngle);
-			FOV.GetComponent<Renderer>().enabled=(currentAngle==targetAngle);
+			FOV.SetActive(currentAngle==targetAngle);
 		}
 
 
@@ -170,7 +171,7 @@ public class Enemy : MonoBehaviour {
 		go();
 	}
 
-	private void seeDistraction(Distraction d, Waypoint location){
+	public void seeDistraction(Distraction d, Waypoint location){
 
 		if(knownVisualDistractions.Contains(d))
 			return;
