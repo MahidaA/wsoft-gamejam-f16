@@ -80,6 +80,8 @@ public class Enemy : MonoBehaviour {
 			FOV.transform.position=transform.position+Vector3.up/4;
 			FOV.transform.eulerAngles=new Vector3(0,0,currentAngle);
 			FOV.SetActive(currentAngle==targetAngle);
+		}else{
+			FOV.SetActive(true);
 		}
 
 
@@ -105,7 +107,7 @@ public class Enemy : MonoBehaviour {
 			float targetAngle=current.guardDir;
 			currentAngle=Mathf.MoveTowardsAngle(currentAngle, targetAngle, 120*speed*Time.deltaTime);
 			FOV.transform.eulerAngles=new Vector3(0,0,currentAngle);
-			FOV.GetComponent<Renderer>().enabled=(currentAngle==targetAngle);
+			FOV.SetActive(currentAngle==targetAngle);
 		}
 
 		if(state==EnemyState.ENGAGING){
