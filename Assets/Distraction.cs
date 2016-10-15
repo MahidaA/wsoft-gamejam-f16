@@ -8,6 +8,10 @@ public class Distraction : MonoBehaviour {
 	public float enemyDistractionTime;
 
 
+	void Start(){
+		Debug.Assert(GetComponent<Distraction>().enemyDistractionTime!=0, "Enemy Distraction Time Cannot be 0");
+	}
+
 	public void distract(){
 		foreach(Enemy e in FindObjectsOfType<Enemy>()){
 			if(Vector3.Distance(transform.position, e.transform.position)<=soundRadius){
