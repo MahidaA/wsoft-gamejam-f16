@@ -3,16 +3,14 @@ using System.Collections;
 
 public class Player : MonoBehaviour {
 
-    public int speed;
-    public int jumpSpeed;
+    public int speed = 3;
+    public int jumpSpeed = 5;
     Rigidbody2D rb;
     bool faceRight;
     bool grounded;
 
 	// Use this for initialization
 	void Start () {
-        speed = 3;
-        jumpSpeed = 5;
         rb = GetComponent<Rigidbody2D>();
         faceRight = true;
         grounded = true;
@@ -39,20 +37,30 @@ public class Player : MonoBehaviour {
         }
 	}
 
+    void OnTriggerStay2D(Collider2D other)
+    {
+        if (other.gameObject.tag == "Ledge")
+        {
+            if (other.gameObject.transform.position.x >= transform.position.x &&
+            Input.GetKey("right") && !grounded)
+            {
+                transform.Translate(Vector2.up * 2 * Time.deltaTime);
+                transform.Translate(Vector2.right * Time.deltaTime);
+            }
+
+            if (other.gameObject.transform.position.x <= transform.position.x &&
+            Input.GetKey("left") && !grounded)
+            {
+                transform.Translate(Vector2.up * 2 * Time.deltaTime);
+                transform.Translate(Vector2.left * Time.deltaTime);
+            }
+        }
+    }
+
     void OnCollisionEnter2D(Collision2D coll) {
         if (coll.gameObject.tag == "pcol")
         {
             grounded = true;
-        }
-
-        if (coll.gameObject.tag == "Ledge")
-        {
-            //if (coll.gameObject.transform.position.x > transform.position.x && 
-            //    Input.GetKey("Right") && !grounded)
-            //{
-            transform.Translate(Vector2.up * 10 * Time.deltaTime);
-            transform.Translate(Vector2.right * 5 * Time.deltaTime);
-            //}
         }
     }
 
