@@ -22,7 +22,6 @@ public class Interactable : MonoBehaviour {
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        Debug.Log("memes");
         if (other.gameObject.tag == "Player")
         {
             state = true;
@@ -31,7 +30,6 @@ public class Interactable : MonoBehaviour {
 
     void OnTriggerExit2D(Collider2D other)
     {
-        Debug.Log("memes");
         if (other.gameObject.tag == "Player")
         {
             state = false;
