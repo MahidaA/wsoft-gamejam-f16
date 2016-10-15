@@ -3,41 +3,99 @@ using System.Collections.Generic;
 
 public class Enemy : MonoBehaviour {
 
+	public const float PATROL_SPEED=3, RUN_SPEED=10;
+
+	public enum EnemyState{
+		PATROLLING, ENGAGING
+	}
+	public EnemyState state;
+
+
 	public List<Waypoint> waypoints;
-	public Waypoint start, end;
+
+	//Default starting point
+	public Waypoint start;
+
 	public float speed=2;
 
-	public List<Waypoint> path;
-	int pathLoc;
-	private Waypoint current, next;
+	//For hearing noises
+	[SerializeField]
+	public float distractionTime;
 
+	//For patroling
+	public Waypoint[] patrolPoints;
+	public float[] waitTimes;
+	private int patrolPointIndex;
+	private float waitTime;
+	private bool shouldWait;
+
+
+	//For going to specific points
+	private List<Waypoint> path;
+	private Waypoint current, next;
 	private bool walking;
 
 	void Start () {
 		transform.position=start.transform.position;
+		state=EnemyState.PATROLLING;
+		speed=PATROL_SPEED;
+		patrolPointIndex=0;
 		current=start;
-		calculatePath(end);
-		go();
+		shouldWait=false;
 	}
 	
 	// Update is called once per frame
 	void Update () {
-		if(walking){
-			if(path.Count==0)
-				return;
-			if(Vector3.Distance(transform.position, path[0].transform.position)<speed*Time.deltaTime){
-				transform.position=next.transform.transform.position;
-				path.RemoveAt(0);
-				current=next;
-				if(path.Count==0){
-					stop();
-					return;
+
+		if(state==EnemyState.PATROLLING){
+			if(path==null||path.Count==0){
+
+				waitTime+=Time.deltaTime;
+
+				if(!shouldWait || waitTime>=waitTimes[patrolPointIndex]){
+					shouldWait=true;
+					waitTime=0;
+					patrolPointIndex++;
+					patrolPointIndex%=patrolPoints.Length;
+					calculatePath(patrolPoints[patrolPointIndex]);
+					go();
 				}
-				next=path[0];
-			}else{
-				transform.position+=(next.transform.position-transform.position).normalized*speed*Time.deltaTime;
+			}
+
+		}
+
+		if(state==EnemyState.ENGAGING){
+			//Enemy at the final waypoint
+			if(path.Count==0){
+				distractionTime-=Time.deltaTime;
+				if(distractionTime<=0){
+					state=EnemyState.PATROLLING;
+					speed=PATROL_SPEED;
+					shouldWait=false;
+				}
 			}
 		}
+
+		if(walking){
+			if(path.Count==0){
+				walking=false;
+			}else{
+				if(Vector3.Distance(transform.position, path[0].transform.position)<speed*Time.deltaTime){
+					transform.position=next.transform.transform.position;
+					path.RemoveAt(0);
+					current=next;
+					if(path.Count==0){
+						stop();
+						return;
+					}
+					next=path[0];
+				}else{
+					transform.position+=(next.transform.position-transform.position).normalized*speed*Time.deltaTime;
+				}
+			}
+		}
+
+
 	}
 
 	public void stop(){
@@ -51,13 +109,18 @@ public class Enemy : MonoBehaviour {
 
 	public void calculatePath(Waypoint newGoal){
 		stop();
+		if(current==newGoal||next==newGoal){
+			path=new List<Waypoint>();
+			path.Add(newGoal);
+			next=newGoal;
+			return;
+		}
+		
 		path=recursiveSearch(current, newGoal, new List<Waypoint>());
 		if(!path.Contains(next)){
 			path.Insert(0, current);
 		}
-		if(Vector3.Distance(transform.position, path[0].transform.position)<1){
-			path.RemoveAt(0);
-		}
+
 		next=path[0];
 	}
 
@@ -73,9 +136,7 @@ public class Enemy : MonoBehaviour {
 				return search;
 			}else{
 				search.Add(w);
-				Debug.Log("GOING IN, "+w);
 				paths[i++]=recursiveSearch(w, goal, search);
-				Debug.Log("GOING OUT, "+w);
 				search.Remove(w);
 			}
 		}
