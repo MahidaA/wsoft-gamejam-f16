@@ -6,20 +6,20 @@ public class Enemy : MonoBehaviour {
 	public const float PATROL_SPEED=3, RUN_SPEED=10;
 
 	public enum EnemyState{
-		PATROLLING, ENGAGING
+		PATROLLING, ENGAGING, GUARD
 	}
+	private EnemyState prevState;
 	public EnemyState state;
 
 
 	public List<Waypoint> waypoints;
 
+	public float speed=2;
+
 	//Default starting point
 	public Waypoint start;
 
-	public float speed=2;
-
 	//For hearing noises
-	[SerializeField]
 	public float distractionTime;
 
 	//For patroling
@@ -29,23 +29,46 @@ public class Enemy : MonoBehaviour {
 	private float waitTime;
 	private bool shouldWait;
 
+	//For guarding
+	public Waypoint guardLocation;
+
 
 	//For going to specific points
 	private List<Waypoint> path;
 	private Waypoint current, next;
 	private bool walking;
 
+	/// <summary>
+	/// For viewing cone
+	/// </summary>
+	public GameObject FOV;
+	private Vector3 prevPos;
+	private float currentAngle;
+
 	void Start () {
 		transform.position=start.transform.position;
-		state=EnemyState.PATROLLING;
 		speed=PATROL_SPEED;
 		patrolPointIndex=0;
 		current=start;
 		shouldWait=false;
+		currentAngle=FOV.transform.eulerAngles.z;
+
+		if(state==EnemyState.GUARD)
+			guardLocation=start;
 	}
 	
 	// Update is called once per frame
 	void Update () {
+
+		Vector3 deltaPos=transform.position-prevPos;
+		if(deltaPos!=Vector3.zero){
+			float targetAngle=Vector3.Angle(Vector3.up, deltaPos)*Mathf.Sign(Vector3.Cross(Vector3.up, deltaPos).z);
+			Debug.Log(targetAngle);
+			currentAngle=Mathf.MoveTowardsAngle(currentAngle, targetAngle, 120*speed*Time.deltaTime);
+			FOV.transform.eulerAngles=new Vector3(0,0,currentAngle);
+			FOV.GetComponent<Renderer>().enabled=(currentAngle==targetAngle);
+		}
+
 
 		if(state==EnemyState.PATROLLING){
 			if(path==null||path.Count==0){
@@ -69,12 +92,23 @@ public class Enemy : MonoBehaviour {
 			if(path.Count==0){
 				distractionTime-=Time.deltaTime;
 				if(distractionTime<=0){
-					state=EnemyState.PATROLLING;
-					speed=PATROL_SPEED;
-					shouldWait=false;
+
+					state=prevState;
+
+					if(state==EnemyState.PATROLLING){
+						speed=PATROL_SPEED;
+						shouldWait=false;
+					}else if(state==EnemyState.GUARD){
+						speed=PATROL_SPEED;
+						calculatePath(guardLocation);
+						go();
+					}
 				}
 			}
 		}
+
+
+		prevPos=transform.position;
 
 		if(walking){
 			if(path.Count==0){
@@ -95,7 +129,6 @@ public class Enemy : MonoBehaviour {
 			}
 		}
 
-
 	}
 
 	public void stop(){
@@ -105,6 +138,21 @@ public class Enemy : MonoBehaviour {
 	public void go(){
 		walking=true;
 		next=path[0];
+	}
+
+	public void engage(Waypoint point, float enemyDistractionTime){
+		if(state!=EnemyState.ENGAGING)
+			prevState=state;
+
+		if(state==EnemyState.GUARD){
+			guardLocation=current;
+		}
+
+		calculatePath(point);
+		speed=Enemy.RUN_SPEED;
+		state=Enemy.EnemyState.ENGAGING;
+		distractionTime=enemyDistractionTime;
+		go();
 	}
 
 	public void calculatePath(Waypoint newGoal){
