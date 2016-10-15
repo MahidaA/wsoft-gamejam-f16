@@ -14,7 +14,7 @@ public class Enemy : MonoBehaviour {
 	}
 	private DistractionType distractionType;
 
-	public const float PATROL_SPEED=3, RUN_SPEED=5;
+	public const float PATROL_SPEED=1.5F, RUN_SPEED=3.5F;
 	private float speed=2;
 
 	private List<Waypoint> waypoints;
@@ -79,7 +79,13 @@ public class Enemy : MonoBehaviour {
 			currentAngle=Mathf.MoveTowardsAngle(currentAngle, targetAngle, 120*speed*Time.deltaTime);
 			FOV.transform.position=transform.position+Vector3.up/4;
 			FOV.transform.eulerAngles=new Vector3(0,0,currentAngle);
-			FOV.SetActive(currentAngle==targetAngle);
+
+
+			if(Mathf.Abs(Mathf.DeltaAngle(targetAngle, 90))<10 || Mathf.Abs(Mathf.DeltaAngle(targetAngle, 90))>170){
+				FOV.SetActive(false);
+			}else{
+				FOV.SetActive(currentAngle==targetAngle);
+			}
 		}else{
 			FOV.SetActive(true);
 		}

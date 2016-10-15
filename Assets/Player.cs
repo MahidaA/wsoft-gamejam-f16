@@ -13,6 +13,8 @@ public class Player : MonoBehaviour {
     int layermask;
     public bool onStairs;
 
+	public float ladderX;
+
 	// Use this for initialization
 	void Start () {
         rb = GetComponent<Rigidbody2D>();
@@ -30,12 +32,12 @@ public class Player : MonoBehaviour {
 
     void isGrounded()
     {
-        RaycastHit2D hit = Physics2D.Raycast(transform.position, -Vector2.up, coll.bounds.extents.y + 0.05f);
+		RaycastHit2D hit = Physics2D.Raycast(transform.position+new Vector3(coll.bounds.extents.x, 0), -Vector2.up,  0.1f);
+		Debug.DrawRay(transform.position+new Vector3(coll.bounds.extents.x, 0), -Vector2.up*(0.2f));
 
         RaycastHit2D staircheckr = Physics2D.Raycast(transform.position, -Vector2.up + Vector2.right, Mathf.Sqrt(Mathf.Pow(coll.bounds.extents.y, 2) + Mathf.Pow(coll.bounds.extents.x, 2)) + 0.5f, layermask);
 
         RaycastHit2D staircheckl = Physics2D.Raycast(transform.position, -Vector2.up + -Vector2.right, Mathf.Sqrt(Mathf.Pow(coll.bounds.extents.y, 2) + Mathf.Pow(coll.bounds.extents.x, 2)) + 0.5f, layermask);
-        print(staircheckl.transform);
 
         if (staircheckr || staircheckl)
         {
@@ -84,33 +86,43 @@ public class Player : MonoBehaviour {
             }
         }
 
-	    if (Input.GetKey("right"))
+
+		RaycastHit2D hit=new RaycastHit2D();
+		if(onLadder)
+			hit = Physics2D.Raycast(transform.position+new Vector3(coll.bounds.extents.x, 0), -Vector2.up,  0.3f);
+
+		if (Input.GetKey("right") && (!onLadder||hit))
         {
             transform.Translate(speed * Vector2.right * Time.deltaTime);
             faceRight = true;
         }
 
-        if (Input.GetKeyDown("space") && grounded)
+		if (Input.GetKeyDown("space") && (grounded||hit))
         {
             rb.velocity = Vector2.up * jumpSpeed;
         }
 
-        if (Input.GetKey("left"))
-        {
-            transform.Translate(speed * Vector2.left * Time.deltaTime);
-            faceRight = false;
+		if (Input.GetKey("left") && (!onLadder||hit))
+		{
+	        transform.Translate(speed * Vector2.left * Time.deltaTime);
+	    	faceRight = false;
         }
 
         if (Input.GetKey("up") && onLadder)
         {
-            transform.Translate(speed * Vector2.up * Time.deltaTime);
+			
+			if(hit.collider==null || hit.collider.tag!="Platform_NonSolid"){
+				transform.Translate(speed * Vector2.up * Time.deltaTime);
+				transform.position-=new Vector3(transform.position.x-ladderX,0,0);
+			}
         }
 
         if (Input.GetKey("down") && onLadder)
         {
             if (!grounded)
             {
-                transform.Translate(speed * Vector2.down * Time.deltaTime);
+				transform.Translate(speed * Vector2.down * Time.deltaTime);
+				transform.position-=new Vector3(transform.position.x-ladderX,0,0);
             }
         }
     }
@@ -142,6 +154,7 @@ public class Player : MonoBehaviour {
         {
             rb.isKinematic = true;
             onLadder = true;
+			ladderX=other.transform.position.x+other.bounds.extents.x-coll.bounds.extents.x;
         }
     }
 
