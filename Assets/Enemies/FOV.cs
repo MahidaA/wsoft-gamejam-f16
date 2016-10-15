@@ -9,7 +9,7 @@ public class FOV : MonoBehaviour {
 
 		Vector3 dir=col.transform.position-transform.position;
 		if(col.transform.tag=="Player"){
-			RaycastHit2D hit=Physics2D.Raycast(transform.position, col.transform.position);
+			RaycastHit2D hit=Physics2D.Raycast(transform.position, col.transform.position-transform.position);
 			if(hit.transform.tag=="Player")
 				Debug.Log("GAME OVER");
 		}
