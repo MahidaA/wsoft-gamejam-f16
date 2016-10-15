@@ -18,7 +18,7 @@ public class StandardPatrol : MonoBehaviour {
 			e.acceptDistraction();
 		}
 
-		if(e.hasPath()==null || (e.isEngaging() && e.distractionFinished())){
+		if(!e.hasPath() || (e.isEngaging() && e.distractionFinished())){
 			e.patrol(waypoints, waitTimes);
 		}
 	}

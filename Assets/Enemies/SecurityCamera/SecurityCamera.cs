@@ -6,6 +6,7 @@ public class SecurityCamera : MonoBehaviour {
 	public float angleRange;
 	public float rotationSpeed;
 	public float waitTime;
+	public float distModifier=1;
 
 	public GameObject cameraFOV;
 
@@ -20,6 +21,8 @@ public class SecurityCamera : MonoBehaviour {
 		cameraFOV.transform.position=transform.position;
 		defaultAngle=transform.eulerAngles.z;
 		cameraFOV.transform.eulerAngles=new Vector3(0,0,defaultAngle+angleRange);
+		cameraFOV.transform.localScale*=distModifier;
+		distModifier=1;
 	}
 
 	// Update is called once per frame
@@ -51,7 +54,7 @@ public class SecurityCamera : MonoBehaviour {
 		Vector3 scale=cameraFOV.transform.lossyScale;
 		float FOV=Mathf.Atan2(scale.y/2, scale.x);
 		angle+=angleRange*Mathf.Deg2Rad+FOV;
-		float dist=new Vector2(scale.x, scale.y).magnitude*2;
+		float dist=new Vector2(scale.x, scale.y).magnitude*2*distModifier;
 
 		Gizmos.color=Color.red;
 		Gizmos.DrawLine(transform.position, transform.position+new Vector3(Mathf.Cos(angle)*dist,
