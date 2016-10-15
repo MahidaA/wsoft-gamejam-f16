@@ -6,7 +6,11 @@ public class BeginPatrolAfterNoise : MonoBehaviour {
 	
 	void Update () {
 		if(GetComponent<Enemy>().isEngaging()){
-			GetComponent<GuardThenPatrol>().guarding=false;
+			GetComponent<StandardGuard>().enabled=false;
+
+			if(GetComponent<Enemy>().distractionFinished()){
+				GetComponent<GuardThenPatrol>().guarding=false;
+			}
 		}
 	}
 }

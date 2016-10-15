@@ -14,7 +14,7 @@ public class Enemy : MonoBehaviour {
 	}
 	private DistractionType distractionType;
 
-	public const float PATROL_SPEED=1.5F, RUN_SPEED=3.5F;
+	public const float PATROL_SPEED=1.5F, RUN_SPEED=5F;
 	private float speed=2;
 
 	private List<Waypoint> waypoints;
@@ -25,15 +25,18 @@ public class Enemy : MonoBehaviour {
 	public Waypoint start;
 
 	//For hearing noises
-	private Distraction distractedBy;
+	public Distraction distractedBy;
 	private Waypoint distractionPoint;
 	private float distractionTime;
 
 	//For patroling
 	private Waypoint[] patrolPoints;
+
 	private float[] waitTimes;
 	private int patrolPointIndex;
+	[SerializeField]
 	private float waitTime;
+	[SerializeField]
 	private bool shouldWait;
 
 	//For guarding
@@ -169,6 +172,7 @@ public class Enemy : MonoBehaviour {
 		speed=PATROL_SPEED;
 		state=EnemyState.GUARD;
 		calculatePath(guardLocation);
+		Debug.Log("HERE");
 		go();
 	}
 
@@ -180,6 +184,7 @@ public class Enemy : MonoBehaviour {
 	}
 
 	public void seeDistraction(Distraction d, Waypoint location){
+
 
 		if(knownVisualDistractions.Contains(d))
 			return;
@@ -229,14 +234,10 @@ public class Enemy : MonoBehaviour {
 	}
 
 	public bool hasPath(){
-		return path!=null && path.Count>0;
+		return path!=null;
 	}
 
 	public void engage(Waypoint point, float enemyDistractionTime){
-		
-		if(state==EnemyState.GUARD){
-			guardLocation=current;
-		}
 
 		calculatePath(point);
 		speed=Enemy.RUN_SPEED;

@@ -14,7 +14,10 @@ public class GuardThenPatrol : MonoBehaviour {
 	void Start(){
 		guard=GetComponent<StandardGuard>();
 		patrol=GetComponent<StandardPatrol>();
-		last=guarding=true;
+
+		last=guarding;
+		guard.enabled=guarding;
+		patrol.enabled=!guarding;
 
 		patrol.enabled=false;
 	}
