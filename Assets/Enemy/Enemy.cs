@@ -3,34 +3,34 @@ using System.Collections.Generic;
 
 public class Enemy : MonoBehaviour {
 
-	public const float PATROL_SPEED=3, RUN_SPEED=10;
 
-	public enum EnemyState{
+	private enum EnemyState{
 		PATROLLING, ENGAGING, GUARD
 	}
-	private EnemyState prevState;
-	public EnemyState state;
+	private EnemyState state;
 
+	public const float PATROL_SPEED=3, RUN_SPEED=5;
+	private float speed=2;
 
-	public List<Waypoint> waypoints;
-
-	public float speed=2;
+	private List<Waypoint> waypoints;
 
 	//Default starting point
 	public Waypoint start;
 
 	//For hearing noises
-	public float distractionTime;
+	private Distraction distractedBy;
+	private Waypoint distractionPoint;
+	private float distractionTime;
 
 	//For patroling
-	public Waypoint[] patrolPoints;
-	public float[] waitTimes;
+	private Waypoint[] patrolPoints;
+	private float[] waitTimes;
 	private int patrolPointIndex;
 	private float waitTime;
 	private bool shouldWait;
 
 	//For guarding
-	public Waypoint guardLocation;
+	private Waypoint guardLocation;
 
 
 	//For going to specific points
@@ -51,10 +51,13 @@ public class Enemy : MonoBehaviour {
 		patrolPointIndex=0;
 		current=start;
 		shouldWait=false;
+
+		FOV=(GameObject)GameObject.Instantiate(FOV);
+
 		currentAngle=FOV.transform.eulerAngles.z;
 
-		if(state==EnemyState.GUARD)
-			guardLocation=start;
+		waypoints=new List<Waypoint>();
+		addWaypoints(start);
 	}
 	
 	// Update is called once per frame
@@ -62,10 +65,11 @@ public class Enemy : MonoBehaviour {
 
 		Vector3 deltaPos=transform.position-prevPos;
 		if(deltaPos!=Vector3.zero){
-			float targetAngle=Vector3.Angle(Vector3.up, deltaPos)*Mathf.Sign(Vector3.Cross(Vector3.up, deltaPos).z);
+			float targetAngle=Vector3.Angle(Vector3.right, deltaPos)*Mathf.Sign(Vector3.Cross(Vector3.right, deltaPos).z);
 			Debug.Log(targetAngle);
 			currentAngle=Mathf.MoveTowardsAngle(currentAngle, targetAngle, 120*speed*Time.deltaTime);
-			FOV.transform.eulerAngles=new Vector3(0,0,currentAngle);
+			FOV.transform.position=transform.position+Vector3.up/4;
+			FOV.transform.eulerAngles=new Vector3(currentAngle,-90,0);
 			FOV.GetComponent<Renderer>().enabled=(currentAngle==targetAngle);
 		}
 
@@ -89,21 +93,8 @@ public class Enemy : MonoBehaviour {
 
 		if(state==EnemyState.ENGAGING){
 			//Enemy at the final waypoint
-			if(path.Count==0){
+			if(path.Count==0 && distractionTime>0){
 				distractionTime-=Time.deltaTime;
-				if(distractionTime<=0){
-
-					state=prevState;
-
-					if(state==EnemyState.PATROLLING){
-						speed=PATROL_SPEED;
-						shouldWait=false;
-					}else if(state==EnemyState.GUARD){
-						speed=PATROL_SPEED;
-						calculatePath(guardLocation);
-						go();
-					}
-				}
 			}
 		}
 
@@ -112,7 +103,7 @@ public class Enemy : MonoBehaviour {
 
 		if(walking){
 			if(path.Count==0){
-				walking=false;
+				stop();
 			}else{
 				if(Vector3.Distance(transform.position, path[0].transform.position)<speed*Time.deltaTime){
 					transform.position=next.transform.transform.position;
@@ -131,19 +122,69 @@ public class Enemy : MonoBehaviour {
 
 	}
 
-	public void stop(){
+	public List<Waypoint> getWaypoints(){
+		return waypoints;
+	}
+
+	public void patrol(Waypoint[] points, float[] waits){
+		patrolPoints=points;
+		waitTimes=waits;
+		speed=PATROL_SPEED;
+		state=EnemyState.PATROLLING;
+		go();
+	}
+
+	public void guard(Waypoint guardLoc){
+		guardLocation=guardLoc;
+		speed=PATROL_SPEED;
+		state=EnemyState.GUARD;
+		calculatePath(guardLocation);
+		go();
+	}
+
+	private void engageAt(Waypoint loc){
+		speed=RUN_SPEED;
+		state=EnemyState.ENGAGING;
+		calculatePath(loc);
+		go();
+	}
+
+	public void hearDistraction(Distraction d, Waypoint location){
+		distractedBy=d;
+		distractionPoint=location;
+	}
+
+	public bool hearingDistraction(){
+		return distractedBy!=null;
+	}
+
+	public bool distractionFinished(){
+		return distractionTime<=0;
+	}
+
+	public void acceptDistraction(){
+		engageAt(distractionPoint);
+		distractionTime=distractedBy.enemyDistractionTime;
+
+		distractedBy=null;
+		distractionPoint=null;
+	}
+
+	public bool isEngaging(){
+		return state==EnemyState.ENGAGING;
+	}
+
+	private void stop(){
 		walking=false;
 	}
 
-	public void go(){
+	private void go(){
 		walking=true;
 		next=path[0];
 	}
 
 	public void engage(Waypoint point, float enemyDistractionTime){
-		if(state!=EnemyState.ENGAGING)
-			prevState=state;
-
+		
 		if(state==EnemyState.GUARD){
 			guardLocation=current;
 		}
@@ -155,7 +196,7 @@ public class Enemy : MonoBehaviour {
 		go();
 	}
 
-	public void calculatePath(Waypoint newGoal){
+	private void calculatePath(Waypoint newGoal){
 		stop();
 		if(current==newGoal||next==newGoal){
 			path=new List<Waypoint>();
@@ -170,6 +211,14 @@ public class Enemy : MonoBehaviour {
 		}
 
 		next=path[0];
+	}
+
+	private void addWaypoints(Waypoint w){
+		if(!waypoints.Contains(w)){
+			waypoints.Add(w);
+			foreach(Waypoint p in w.connected)
+				addWaypoints(p);
+		}
 	}
 
 	private List<Waypoint> recursiveSearch(Waypoint now, Waypoint goal, List<Waypoint> search){
