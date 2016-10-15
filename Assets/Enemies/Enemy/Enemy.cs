@@ -25,7 +25,7 @@ public class Enemy : MonoBehaviour {
 	public Waypoint start;
 
 	//For hearing noises
-	public Distraction distractedBy;
+	private Distraction distractedBy;
 	private Waypoint distractionPoint;
 	private float distractionTime;
 
@@ -34,13 +34,13 @@ public class Enemy : MonoBehaviour {
 
 	private float[] waitTimes;
 	private int patrolPointIndex;
-	[SerializeField]
 	private float waitTime;
-	[SerializeField]
 	private bool shouldWait;
 
 	//For guarding
 	private Waypoint guardLocation;
+
+	public GameObject guardModel;
 
 
 	//For going to specific points
@@ -71,10 +71,14 @@ public class Enemy : MonoBehaviour {
 		addWaypoints(start);
 
 		knownVisualDistractions=new List<Distraction>();
+
+		guardModel=(GameObject)Instantiate(guardModel);
+		guardModel.GetComponent<GuardAnimationController>().e=this;
 	}
 	
 	// Update is called once per frame
 	void Update () {
+		guardModel.transform.position=transform.position+Vector3.down*0.5F;
 
 		Vector3 deltaPos=transform.position-prevPos;
 		if(deltaPos!=Vector3.zero){
