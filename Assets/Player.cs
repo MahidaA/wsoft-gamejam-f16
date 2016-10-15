@@ -35,9 +35,9 @@ public class Player : MonoBehaviour {
 		RaycastHit2D hit = Physics2D.Raycast(transform.position+new Vector3(coll.bounds.extents.x, 0), -Vector2.up,  0.1f);
 		Debug.DrawRay(transform.position+new Vector3(coll.bounds.extents.x, 0), -Vector2.up*(0.2f));
 
-        RaycastHit2D staircheckr = Physics2D.Raycast(transform.position, -Vector2.up + Vector2.right, Mathf.Sqrt(Mathf.Pow(coll.bounds.extents.y, 2) + Mathf.Pow(coll.bounds.extents.x, 2)) + 0.5f, layermask);
+		RaycastHit2D staircheckr = Physics2D.Raycast(transform.position+new Vector3(coll.bounds.extents.x, 0), -Vector2.up + Vector2.right, Mathf.Sqrt(Mathf.Pow(coll.bounds.extents.y, 2) + Mathf.Pow(coll.bounds.extents.x, 2)) + 0.5f, layermask);
 
-        RaycastHit2D staircheckl = Physics2D.Raycast(transform.position, -Vector2.up + -Vector2.right, Mathf.Sqrt(Mathf.Pow(coll.bounds.extents.y, 2) + Mathf.Pow(coll.bounds.extents.x, 2)) + 0.5f, layermask);
+		RaycastHit2D staircheckl = Physics2D.Raycast(transform.position+new Vector3(coll.bounds.extents.x, 0), -Vector2.up + -Vector2.right, Mathf.Sqrt(Mathf.Pow(coll.bounds.extents.y, 2) + Mathf.Pow(coll.bounds.extents.x, 2)) + 0.5f, layermask);
 
         if (staircheckr || staircheckl)
         {
