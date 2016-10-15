@@ -4,7 +4,9 @@ using System.Collections;
 public class Distraction : MonoBehaviour {
 
 	public float soundRadius;
+	public bool isVisualDistraction;
 	public float enemyDistractionTime;
+
 
 	public void distract(){
 		foreach(Enemy e in FindObjectsOfType<Enemy>()){

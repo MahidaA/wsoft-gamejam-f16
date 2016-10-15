@@ -9,10 +9,17 @@ public class Enemy : MonoBehaviour {
 	}
 	private EnemyState state;
 
+	public enum DistractionType{
+		SOUND, VISUAL
+	}
+	private DistractionType distractionType;
+
 	public const float PATROL_SPEED=3, RUN_SPEED=5;
 	private float speed=2;
 
 	private List<Waypoint> waypoints;
+
+	private List<Distraction> knownVisualDistractions;
 
 	//Default starting point
 	public Waypoint start;
@@ -58,6 +65,8 @@ public class Enemy : MonoBehaviour {
 
 		waypoints=new List<Waypoint>();
 		addWaypoints(start);
+
+		knownVisualDistractions=new List<Distraction>();
 	}
 	
 	// Update is called once per frame
@@ -66,15 +75,15 @@ public class Enemy : MonoBehaviour {
 		Vector3 deltaPos=transform.position-prevPos;
 		if(deltaPos!=Vector3.zero){
 			float targetAngle=Vector3.Angle(Vector3.right, deltaPos)*Mathf.Sign(Vector3.Cross(Vector3.right, deltaPos).z);
-			Debug.Log(targetAngle);
 			currentAngle=Mathf.MoveTowardsAngle(currentAngle, targetAngle, 120*speed*Time.deltaTime);
 			FOV.transform.position=transform.position+Vector3.up/4;
-			FOV.transform.eulerAngles=new Vector3(currentAngle,-90,0);
+			FOV.transform.eulerAngles=new Vector3(0,0,currentAngle);
 			FOV.GetComponent<Renderer>().enabled=(currentAngle==targetAngle);
 		}
 
 
-		if(state==EnemyState.PATROLLING){
+		if(state==EnemyState.PATROLLING && patrolPoints!=null){
+			
 			if(path==null||path.Count==0){
 
 				waitTime+=Time.deltaTime;
@@ -89,6 +98,13 @@ public class Enemy : MonoBehaviour {
 				}
 			}
 
+		}
+
+		if(state==EnemyState.GUARD && (path==null || path.Count==0)){
+			float targetAngle=current.guardDir;
+			currentAngle=Mathf.MoveTowardsAngle(currentAngle, targetAngle, 120*speed*Time.deltaTime);
+			FOV.transform.eulerAngles=new Vector3(0,0,currentAngle);
+			FOV.GetComponent<Renderer>().enabled=(currentAngle==targetAngle);
 		}
 
 		if(state==EnemyState.ENGAGING){
@@ -129,8 +145,13 @@ public class Enemy : MonoBehaviour {
 	public void patrol(Waypoint[] points, float[] waits){
 		patrolPoints=points;
 		waitTimes=waits;
+
+		patrolPointIndex=Random.Range(0, patrolPoints.Length);
+
 		speed=PATROL_SPEED;
 		state=EnemyState.PATROLLING;
+
+		calculatePath(patrolPoints[patrolPointIndex]);
 		go();
 	}
 
@@ -149,12 +170,23 @@ public class Enemy : MonoBehaviour {
 		go();
 	}
 
+	private void seeDistraction(Distraction d, Waypoint location){
+
+		if(knownVisualDistractions.Contains(d))
+			return;
+
+		distractedBy=d;
+		distractionPoint=location;
+		distractionType=DistractionType.VISUAL;
+	}
+
 	public void hearDistraction(Distraction d, Waypoint location){
 		distractedBy=d;
 		distractionPoint=location;
+		distractionType=DistractionType.SOUND;
 	}
 
-	public bool hearingDistraction(){
+	public bool isDistracted(){
 		return distractedBy!=null;
 	}
 
@@ -165,6 +197,10 @@ public class Enemy : MonoBehaviour {
 	public void acceptDistraction(){
 		engageAt(distractionPoint);
 		distractionTime=distractedBy.enemyDistractionTime;
+
+		if(distractionType==DistractionType.VISUAL){
+			knownVisualDistractions.Add(distractedBy);
+		}
 
 		distractedBy=null;
 		distractionPoint=null;
@@ -181,6 +217,10 @@ public class Enemy : MonoBehaviour {
 	private void go(){
 		walking=true;
 		next=path[0];
+	}
+
+	public bool hasPath(){
+		return path!=null && path.Count>0;
 	}
 
 	public void engage(Waypoint point, float enemyDistractionTime){
