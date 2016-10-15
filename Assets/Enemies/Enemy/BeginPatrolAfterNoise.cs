@@ -5,7 +5,7 @@ using System.Collections;
 public class BeginPatrolAfterNoise : MonoBehaviour {
 	
 	void Update () {
-		if(GetComponent<Enemy>().isEngaging){
+		if(GetComponent<Enemy>().isEngaging()){
 			GetComponent<GuardThenPatrol>().guarding=false;
 		}
 	}
