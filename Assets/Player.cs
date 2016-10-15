@@ -20,17 +20,25 @@ public class Player : MonoBehaviour {
         faceRight = true;
         grounded = true;
         layermask = 1 << 8;
-	}
+
+        GameObject[] stairs = GameObject.FindGameObjectsWithTag("Stairs");
+        foreach (var st in stairs)
+        {
+            st.GetComponent<Collider2D>().isTrigger = true;
+        }
+    }
 
     void isGrounded()
     {
         RaycastHit2D hit = Physics2D.Raycast(transform.position, -Vector2.up, coll.bounds.extents.y + 0.05f);
 
-        RaycastHit2D staircheck = Physics2D.Raycast(transform.position, -Vector2.up + Vector2.right, Mathf.Sqrt(Mathf.Pow(coll.bounds.extents.y, 2) + Mathf.Pow(coll.bounds.extents.x, 2)) + 0.5f, layermask);
+        RaycastHit2D staircheckr = Physics2D.Raycast(transform.position, -Vector2.up + Vector2.right, Mathf.Sqrt(Mathf.Pow(coll.bounds.extents.y, 2) + Mathf.Pow(coll.bounds.extents.x, 2)) + 0.5f, layermask);
 
-        if (staircheck)
+        RaycastHit2D staircheckl = Physics2D.Raycast(transform.position, -Vector2.up + -Vector2.right, Mathf.Sqrt(Mathf.Pow(coll.bounds.extents.y, 2) + Mathf.Pow(coll.bounds.extents.x, 2)) + 0.5f, layermask);
+        print(staircheckl.transform);
+
+        if (staircheckr || staircheckl)
         {
-
             onStairs = true;
             grounded = true;
             return;
@@ -60,7 +68,21 @@ public class Player : MonoBehaviour {
     void Update () {
         isGrounded();
 
-        
+        rb.constraints = RigidbodyConstraints2D.FreezeRotation;
+
+        if (onStairs)
+        {
+            rb.constraints = RigidbodyConstraints2D.FreezePositionX | RigidbodyConstraints2D.FreezeRotation;
+        }
+
+        if (onStairs && Input.GetKeyDown("down"))
+        {
+            GameObject[] stairs = GameObject.FindGameObjectsWithTag("Stairs");
+            foreach (var st in stairs)
+            {
+                st.GetComponent<Collider2D>().isTrigger = true;
+            }
+        }
 
 	    if (Input.GetKey("right"))
         {
@@ -93,8 +115,29 @@ public class Player : MonoBehaviour {
         }
     }
 
+    void OnCollisionEnter2D(Collision2D other)
+    {
+        if (other.transform.tag == "Platform")
+        {
+            GameObject[] stairs = GameObject.FindGameObjectsWithTag("Stairs");
+            foreach (var st in stairs)
+            {
+                st.GetComponent<Collider2D>().isTrigger = true;
+            }
+        }
+    }
+
     void OnTriggerEnter2D(Collider2D other)
     {
+        if (other.transform.tag == "Stairs" && Input.GetKey("up") && transform.position.x < other.transform.position.x)
+        {
+            other.GetComponent<Collider2D>().isTrigger = false;
+        }
+        else if (other.transform.tag == "Stairs" && Input.GetKey("up") && transform.position.x > other.transform.position.x)
+        {
+            other.GetComponent<Collider2D>().isTrigger = false;
+        }
+
         if (other.gameObject.tag == "Ladder")
         {
             rb.isKinematic = true;
