@@ -14,9 +14,10 @@ public class Interactable : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        if (Input.GetKey("e") && state)
+        if (Input.GetKeyDown("e") && state)
         {
             GetComponent<BoxCollider2D>().enabled = !(GetComponent<BoxCollider2D>().enabled);
+            gameObject.GetComponent<Renderer>().enabled = !gameObject.GetComponent<Renderer>().enabled;
         }
     }
 
