@@ -4,14 +4,16 @@ using System.Collections;
 public class Distraction : MonoBehaviour {
 
 	public float soundRadius;
+	public bool isVisualDistraction;
 	public float enemyDistractionTime;
+
 
 	public void distract(){
 		foreach(Enemy e in FindObjectsOfType<Enemy>()){
 			if(Vector3.Distance(transform.position, e.transform.position)<=soundRadius){
 				Waypoint closest=null;
 				float dist=0;
-				foreach(Waypoint w in e.waypoints){
+				foreach(Waypoint w in e.getWaypoints()){
 					if(closest==null){
 						closest=w;
 						dist=Vector3.Distance(w.transform.position, transform.position);
@@ -24,7 +26,7 @@ public class Distraction : MonoBehaviour {
 					}
 				}
 
-				e.engage(closest, enemyDistractionTime);
+				e.hearDistraction(this, closest);
 			}
 		}
 	}

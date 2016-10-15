@@ -4,6 +4,8 @@ using System.Collections.Generic;
 public class Waypoint : MonoBehaviour {
 	public List<Waypoint> connected;
 
+	public float guardDir;
+
 	void Awake(){
 		GetComponent<Renderer>().enabled=false;
 		foreach(Waypoint w in connected){
