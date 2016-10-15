@@ -18,7 +18,9 @@ public class Interactable : MonoBehaviour {
         {
             GetComponent<BoxCollider2D>().enabled = !(GetComponent<BoxCollider2D>().enabled);
             gameObject.GetComponent<Renderer>().enabled = !gameObject.GetComponent<Renderer>().enabled;
-            GetComponent<Distraction>().isVisualDistraction = !GetComponent<Distraction>().isVisualDistraction;
+
+			if(GetComponent<Distraction>()!=null)
+            	GetComponent<Distraction>().isVisualDistraction = !GetComponent<Distraction>().isVisualDistraction;
         }
     }
 
