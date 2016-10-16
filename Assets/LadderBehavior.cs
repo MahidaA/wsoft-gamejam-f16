@@ -27,7 +27,7 @@ public class LadderBehavior : MonoBehaviour {
 					playerScript.level += 2;
 				}
 				else if(playerScript.level == level2){
-					playerScript.ladderSwitch(new Vector3(gameObject.transform.position.x, (playerScript.level-1)*45,0));
+					playerScript.ladderSwitch(new Vector3(gameObject.transform.position.x, (playerScript.level-1)*45-30,0));
 					playerScript.goingUp = false;
 					playerScript.level -= 2;
 				}
