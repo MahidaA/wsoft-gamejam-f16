@@ -156,6 +156,10 @@ public class Player : MonoBehaviour {
             onLadder = true;
 			ladderX=other.transform.position.x+other.bounds.extents.x-coll.bounds.extents.x;
         }
+
+		if(other.GetComponent<Enemy>()!=null){
+			GameObject.FindObjectOfType<Game>().gameOver();
+		}
     }
 
     void OnTriggerExit2D(Collider2D other)
