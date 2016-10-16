@@ -93,6 +93,13 @@ public class Enemy : MonoBehaviour {
 				FOV.SetActive(currentAngle==targetAngle);
 			}
 		}else{
+			if(Mathf.Abs(Mathf.DeltaAngle(currentAngle, 180))<80){
+				guardModel.transform.eulerAngles=new Vector3(0, 90, 0);
+
+			}else if(Mathf.Abs(Mathf.DeltaAngle(currentAngle, 0))<80){
+				guardModel.transform.eulerAngles=new Vector3(0, 270, 0);
+
+			}
 			FOV.SetActive(true);
 		}
 
