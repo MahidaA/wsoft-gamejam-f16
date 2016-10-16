@@ -5,6 +5,7 @@ public class SecurityTerminal : MonoBehaviour {
 
 	public SecurityCamera cam;
 	private Player p;
+    public AudioSource hacking;
 	private bool state; //true if someone is within the trigger
 
 	// Update is called once per frame
@@ -13,6 +14,7 @@ public class SecurityTerminal : MonoBehaviour {
 		{
 			cam.active=false;
 			p.GetComponent<PlayerAnimationController>().anim.SetTrigger("Interact");
+            hacking.Play();
 			p.disable(1.5F);
 		}
 	}
