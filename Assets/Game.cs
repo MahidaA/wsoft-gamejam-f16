@@ -18,8 +18,8 @@ public class Game : MonoBehaviour {
 		over=true;
 		if(routine==null){
 			alpha=0;
-			Time.timeScale=0.2F;
-			StartCoroutine(fadeToBlack());
+			Time.timeScale=0.5F;
+			routine=StartCoroutine(fadeToBlack());
 		}
 	}
 
