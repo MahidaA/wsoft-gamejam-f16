@@ -4,10 +4,12 @@ using UnityEngine.SceneManagement;
 
 public class Game : MonoBehaviour {
 
-	public string[] LEVELS=new string[]{"scene_level1", "scene_level2", "scene_level3"};
+	public static readonly string[] LEVELS=new string[]{"scene_level1", "scene_level2", "scene_level3", "scene_levelFinal"};
 	private static int currentLevel=0;
 
-	private Coroutine routine; 
+    private Coroutine routine;
+
+    public AudioSource detected;
 
 	private float alpha=0;
 	private Texture2D tex;
@@ -17,9 +19,14 @@ public class Game : MonoBehaviour {
 		tex = new Texture2D(1, 1);
 	}
 
+	void Update(){
+		if(Input.GetKeyDown(KeyCode.U))
+			SceneManager.LoadScene(LEVELS[0]);
+	}
+
 	public void nextLevel(){
 		over=true;
-		if(routine==null){
+        if (routine==null){
 			alpha=0;
 			Time.timeScale=0.5F;
 			currentLevel++;
@@ -29,7 +36,8 @@ public class Game : MonoBehaviour {
 
 	public void gameOver(){
 		over=true;
-		if(routine==null){
+        detected.Play();
+        if (routine==null){
 			alpha=0;
 			Time.timeScale=0.5F;
 			routine=StartCoroutine(fadeToBlack(SceneManager.GetActiveScene().name));

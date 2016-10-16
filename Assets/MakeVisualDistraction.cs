@@ -5,6 +5,7 @@ using System.Collections;
 public class MakeVisualDistraction : MonoBehaviour {
 
 	bool state; //true if someone is within the trigger
+	private Player p;
 
 	// Update is called once per frame
 	void Update () {
@@ -12,6 +13,7 @@ public class MakeVisualDistraction : MonoBehaviour {
 		{
 			GetComponent<Distraction>().isVisualDistraction=true;
 			GetComponent<Renderer>().material.color=Color.green;
+//			p.GetComponent<PlayerAnimationController>().anim.SetTrigger("Interact");
 		}
 	}
 
@@ -20,6 +22,7 @@ public class MakeVisualDistraction : MonoBehaviour {
 		if (other.gameObject.tag == "Player")
 		{
 			state = true;
+			p=other.GetComponent<Player>();
 		}
 	}
 
