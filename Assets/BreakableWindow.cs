@@ -6,7 +6,7 @@ public class BreakableWindow : MonoBehaviour {
 
 	private bool state=false;
     public AudioSource breaking;
-	public Material windowMat;
+	public GameObject window;
 	public Texture2D broken;
 
 
@@ -16,7 +16,7 @@ public class BreakableWindow : MonoBehaviour {
 			if(!GetComponent<Distraction>().isVisualDistraction){
 				Distraction d=GetComponent<Distraction>();
                 breaking.Play();
-				windowMat.mainTexture=broken;
+				window.GetComponent<Renderer>().material.mainTexture=broken;
 //				GetComponent<Renderer>().enabled=false;
 				GetComponent<Collider2D>().isTrigger=true;
 				d.isVisualDistraction=true;
