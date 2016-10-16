@@ -73,7 +73,6 @@ public class Enemy : MonoBehaviour {
 		knownVisualDistractions=new List<Distraction>();
 
 		guardModel=(GameObject)Instantiate(guardModel);
-		guardModel.GetComponent<GuardAnimationController>().e=this;
 	}
 	
 	// Update is called once per frame
@@ -176,7 +175,6 @@ public class Enemy : MonoBehaviour {
 		speed=PATROL_SPEED;
 		state=EnemyState.GUARD;
 		calculatePath(guardLocation);
-		Debug.Log("HERE");
 		go();
 	}
 
