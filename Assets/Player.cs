@@ -19,15 +19,12 @@ public class Player : MonoBehaviour {
 
 	public void disable(float time){
 		ignore=true;
-		Debug.Log(time);
 		StartCoroutine(waitThenGainControl(time));
 	}
 
 	private IEnumerator waitThenGainControl(float time){
-		Debug.Log("Start");
 		yield return new WaitForSecondsRealtime(time);
 		ignore=false;
-		Debug.Log("END");
 	}
 
 	// Use this for initialization
@@ -198,6 +195,7 @@ public class Player : MonoBehaviour {
 
     void OnTriggerExit2D(Collider2D other)
     {
+		
         if (other.gameObject.tag == "Ladder")
         {
             rb.isKinematic = false;
@@ -206,6 +204,7 @@ public class Player : MonoBehaviour {
 
 		if (other.gameObject.tag == "Ledge"){
 			rb.velocity=new Vector2(0,0);
+			GetComponent<PlayerAnimationController>().ledge=false;
 		}
     }
 
