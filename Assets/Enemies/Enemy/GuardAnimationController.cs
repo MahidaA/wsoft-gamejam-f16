@@ -28,6 +28,7 @@ public class GuardAnimationController : MonoBehaviour {
 				climbing=true;
 			}
 		}
+
 		anim.SetBool("walking", walking);
 		anim.SetBool("climbing", climbing);
 			

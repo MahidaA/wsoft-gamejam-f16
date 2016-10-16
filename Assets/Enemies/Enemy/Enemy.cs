@@ -93,6 +93,13 @@ public class Enemy : MonoBehaviour {
 				FOV.SetActive(currentAngle==targetAngle);
 			}
 		}else{
+			if(Mathf.Abs(Mathf.DeltaAngle(currentAngle, 180))<80){
+				guardModel.transform.eulerAngles=new Vector3(0, 90, 0);
+
+			}else if(Mathf.Abs(Mathf.DeltaAngle(currentAngle, 0))<80){
+				guardModel.transform.eulerAngles=new Vector3(0, 270, 0);
+
+			}
 			FOV.SetActive(true);
 		}
 
@@ -155,6 +162,24 @@ public class Enemy : MonoBehaviour {
 
 	public List<Waypoint> getWaypoints(){
 		return waypoints;
+	}
+
+	public Waypoint getClosest(Vector3 location){
+		Waypoint closest=null;
+		float dist=0;
+		foreach(Waypoint w in waypoints){
+			if(closest==null){
+				closest=w;
+				dist=Vector3.Distance(w.transform.position, location);
+			}else{
+				float storeDist;
+				if((storeDist=Vector3.Distance(w.transform.position, location))<dist){
+					closest=w;
+					dist=storeDist;
+				}
+			}
+		}
+		return closest;
 	}
 
 	public void patrol(Waypoint[] points, float[] waits){
@@ -224,6 +249,10 @@ public class Enemy : MonoBehaviour {
 
 	public bool isEngaging(){
 		return state==EnemyState.ENGAGING;
+	}
+
+	public bool isWalking(){
+		return walking;
 	}
 
 	private void stop(){
