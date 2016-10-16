@@ -12,7 +12,7 @@ public class BreakableWindow : MonoBehaviour {
 			if(!GetComponent<Distraction>().isVisualDistraction){
 				Distraction d=GetComponent<Distraction>();
 				GetComponent<Renderer>().enabled=false;
-				GetComponent<Collider>().isTrigger=true;
+				GetComponent<Collider2D>().isTrigger=true;
 				d.isVisualDistraction=false;
 				d.distract();
 			}
