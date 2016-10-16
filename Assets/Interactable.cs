@@ -6,6 +6,9 @@ public class Interactable : MonoBehaviour {
 
     bool state; //true if someone is within the trigger
 	private Player p;
+
+	public GameObject model;
+
     // Use this for initialization
     void Start()
     {
@@ -18,7 +21,8 @@ public class Interactable : MonoBehaviour {
         if (Input.GetKeyDown("e") && state)
         {
             GetComponent<BoxCollider2D>().enabled = !(GetComponent<BoxCollider2D>().enabled);
-            gameObject.GetComponent<Renderer>().enabled = !gameObject.GetComponent<Renderer>().enabled;
+
+			model.GetComponent<Renderer>().enabled= GetComponent<BoxCollider2D>().enabled;
 
 			if(GetComponent<Distraction>()!=null)
             	GetComponent<Distraction>().isVisualDistraction = !GetComponent<Distraction>().isVisualDistraction;
