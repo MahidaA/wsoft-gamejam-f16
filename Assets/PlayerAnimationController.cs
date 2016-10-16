@@ -30,7 +30,7 @@ public class PlayerAnimationController : MonoBehaviour {
 			if(Input.GetKey(KeyCode.UpArrow)){
 				anim.speed=3;
 			}else if(Input.GetKey(KeyCode.DownArrow)){
-				anim.speed=-3;
+				anim.speed=3;
 			}else{
 				anim.speed=0;
 			}
@@ -43,9 +43,9 @@ public class PlayerAnimationController : MonoBehaviour {
 		}else{
 			anim.speed=1;
 			anim.SetBool("climbing", false);
-			if(Input.GetKeyDown(KeyCode.LeftArrow)){
+			if(Input.GetKey(KeyCode.LeftArrow)){
 				playerModel.transform.eulerAngles=new Vector3(0,90,0);
-			}else if(Input.GetKeyDown(KeyCode.RightArrow)){
+			}else if(Input.GetKey(KeyCode.RightArrow)){
 				playerModel.transform.eulerAngles=new Vector3(0,270,0);
 			}
 

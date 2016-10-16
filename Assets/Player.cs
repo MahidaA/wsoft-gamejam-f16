@@ -19,6 +19,7 @@ public class Player : MonoBehaviour {
 
 	public void disable(float time){
 		ignore=true;
+		rb.velocity=Vector2.zero;
 		StartCoroutine(waitThenGainControl(time));
 	}
 
