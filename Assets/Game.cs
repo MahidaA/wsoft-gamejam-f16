@@ -4,7 +4,7 @@ using UnityEngine.SceneManagement;
 
 public class Game : MonoBehaviour {
 
-	public static readonly string[] LEVELS=new string[]{"scene_level1", "scene_level2", "scene_level3", "scene_levelFinal"};
+	public static readonly string[] LEVELS=new string[]{"scene_level1", "scene_level2", "scene_level3", "scene_levelFinal", "Credits"};
 	private static int currentLevel=0;
 
     private Coroutine routine;
