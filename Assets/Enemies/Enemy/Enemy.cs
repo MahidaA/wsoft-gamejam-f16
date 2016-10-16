@@ -164,6 +164,24 @@ public class Enemy : MonoBehaviour {
 		return waypoints;
 	}
 
+	public Waypoint getClosest(Vector3 location){
+		Waypoint closest=null;
+		float dist=0;
+		foreach(Waypoint w in waypoints){
+			if(closest==null){
+				closest=w;
+				dist=Vector3.Distance(w.transform.position, location);
+			}else{
+				float storeDist;
+				if((storeDist=Vector3.Distance(w.transform.position, location))<dist){
+					closest=w;
+					dist=storeDist;
+				}
+			}
+		}
+		return closest;
+	}
+
 	public void patrol(Waypoint[] points, float[] waits){
 		patrolPoints=points;
 		waitTimes=waits;
@@ -231,6 +249,10 @@ public class Enemy : MonoBehaviour {
 
 	public bool isEngaging(){
 		return state==EnemyState.ENGAGING;
+	}
+
+	public bool isWalking(){
+		return walking;
 	}
 
 	private void stop(){

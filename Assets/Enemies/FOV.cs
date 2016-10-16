@@ -19,7 +19,6 @@ public class FOV : MonoBehaviour {
 			if(col.GetComponent<Distraction>() && col.GetComponent<Distraction>().isVisualDistraction){
 				RaycastHit2D hit=Physics2D.Raycast(transform.position, col.transform.position-transform.position, dir.magnitude);
 
-				Debug.Log(hit.collider.gameObject+", "+col.gameObject);
 				if(hit.collider==null || hit.collider.transform==col.transform){
 					Waypoint closest=null;
 					float dist=0;
