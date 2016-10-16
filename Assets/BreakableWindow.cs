@@ -5,12 +5,14 @@ using System.Collections;
 public class BreakableWindow : MonoBehaviour {
 
 	private bool state=false;
+    public AudioSource breaking;
 
-	void Update () {
+    void Update () {
 		if (Input.GetKeyDown("e") && state)
 		{
 			if(!GetComponent<Distraction>().isVisualDistraction){
 				Distraction d=GetComponent<Distraction>();
+                breaking.Play();
 				GetComponent<Renderer>().enabled=false;
 				GetComponent<Collider2D>().isTrigger=true;
 				d.isVisualDistraction=true;
