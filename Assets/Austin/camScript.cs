@@ -6,11 +6,12 @@ public class camScript : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-	
+		transform.LookAt(target.transform);
 	}
 	
 	// Update is called once per frame
 	void Update () {
-		transform.LookAt(target.transform);
+		gameObject.transform.position = new Vector3(target.transform.position.x, target.transform.position.y+50,-300);
+
 	}
 }

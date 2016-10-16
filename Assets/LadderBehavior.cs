@@ -22,14 +22,14 @@ public class LadderBehavior : MonoBehaviour {
 			if(Input.GetKey(KeyCode.UpArrow)){
 				
 				if(playerScript.level == level1){
+					playerScript.ladderSwitch(new Vector3(gameObject.transform.position.x, (playerScript.level-1)*45,0));
 					playerScript.goingUp = true;
-					playerScript.level += 1;
-					playerScript.ladderSwitch(new Vector3(gameObject.transform.position.x-5, 0,0));
+					playerScript.level += 2;
 				}
 				else if(playerScript.level == level2){
-					playerScript.level -= 1;
+					playerScript.ladderSwitch(new Vector3(gameObject.transform.position.x, (playerScript.level-1)*45,0));
 					playerScript.goingUp = false;
-					playerScript.ladderSwitch(new Vector3(gameObject.transform.position.x-5, 70,0));
+					playerScript.level -= 2;
 				}
 			}
 		}
@@ -38,10 +38,10 @@ public class LadderBehavior : MonoBehaviour {
 	void OnTriggerEnter(Collider other) {
 		if(playerScript.climbing){
 			if(playerScript.level == level2){ // got to top
-				playerScript.ladderSwitch(new Vector3(gameObject.transform.position.x-5, 90,0));
+				playerScript.ladderSwitch(new Vector3(gameObject.transform.position.x, 91,0));
 			}
 			else{
-				playerScript.ladderSwitch(new Vector3(gameObject.transform.position.x-5, 0,0));
+				playerScript.ladderSwitch(new Vector3(gameObject.transform.position.x, 0,0));
 			}
 		}
     }
