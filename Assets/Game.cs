@@ -4,6 +4,9 @@ using UnityEngine.SceneManagement;
 
 public class Game : MonoBehaviour {
 
+	public string[] LEVELS=new string[]{"scene_level1", "scene_level2", "scene_level3"};
+	private static int currentLevel=0;
+
 	private Coroutine routine; 
 
 	private float alpha=0;
@@ -14,16 +17,26 @@ public class Game : MonoBehaviour {
 		tex = new Texture2D(1, 1);
 	}
 
+	public void nextLevel(){
+		over=true;
+		if(routine==null){
+			alpha=0;
+			Time.timeScale=0.5F;
+			currentLevel++;
+			routine=StartCoroutine(fadeToBlack(LEVELS[currentLevel]));
+		}
+	}
+
 	public void gameOver(){
 		over=true;
 		if(routine==null){
 			alpha=0;
 			Time.timeScale=0.5F;
-			routine=StartCoroutine(fadeToBlack());
+			routine=StartCoroutine(fadeToBlack(SceneManager.GetActiveScene().name));
 		}
 	}
 
-	private IEnumerator fadeToBlack(){
+	private IEnumerator fadeToBlack(string sceneToLoad){
 		while(alpha<1){
 			alpha+=Time.deltaTime;
 			tex.SetPixel(0,0,new Color(0,0,0,alpha));
@@ -32,7 +45,7 @@ public class Game : MonoBehaviour {
 		}
 		Time.timeScale=1;
 		yield return new WaitForSecondsRealtime(2);
-		SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+		SceneManager.LoadScene(sceneToLoad);
 	}
 
 	void OnPostRender(){
