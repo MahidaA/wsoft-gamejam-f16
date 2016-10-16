@@ -5,7 +5,6 @@ using UnityEngine.SceneManagement;
 public class Game : MonoBehaviour {
 
 	public static readonly string[] LEVELS=new string[]{"scene_level1", "scene_level2", "scene_level3", "scene_levelFinal", "Credits"};
-	private static int currentLevel=0;
 
     private Coroutine routine;
 
@@ -29,8 +28,14 @@ public class Game : MonoBehaviour {
         if (routine==null){
 			alpha=0;
 			Time.timeScale=0.5F;
-			currentLevel++;
-			routine=StartCoroutine(fadeToBlack(LEVELS[currentLevel]));
+			int next=-1;
+			for(int i=0;i<LEVELS.Length;i++){
+				if(SceneManager.GetActiveScene().name.Equals(LEVELS[i])){
+					next=i+1;
+					break;
+				}
+			}
+			routine=StartCoroutine(fadeToBlack(LEVELS[next]));
 		}
 	}
 
