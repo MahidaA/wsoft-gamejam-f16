@@ -4,7 +4,7 @@ using UnityEngine.SceneManagement;
 
 public class Game : MonoBehaviour {
 
-	public string[] LEVELS=new string[]{"scene_level1", "scene_level2", "scene_level3"};
+	public static readonly string[] LEVELS=new string[]{"scene_level1", "scene_level2", "scene_level3", "scene_levelFinal"};
 	private static int currentLevel=0;
 
 	private Coroutine routine; 
@@ -15,6 +15,11 @@ public class Game : MonoBehaviour {
 
 	void Start(){
 		tex = new Texture2D(1, 1);
+	}
+
+	void Update(){
+		if(Input.GetKeyDown(KeyCode.U))
+			SceneManager.LoadScene(LEVELS[0]);
 	}
 
 	public void nextLevel(){

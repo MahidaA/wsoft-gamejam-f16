@@ -15,6 +15,21 @@ public class Player : MonoBehaviour {
 
 	public float ladderX;
 
+	public bool ignore;
+
+	public void disable(float time){
+		ignore=true;
+		Debug.Log(time);
+		StartCoroutine(waitThenGainControl(time));
+	}
+
+	private IEnumerator waitThenGainControl(float time){
+		Debug.Log("Start");
+		yield return new WaitForSecondsRealtime(time);
+		ignore=false;
+		Debug.Log("END");
+	}
+
 	// Use this for initialization
 	void Start () {
         rb = GetComponent<Rigidbody2D>();
@@ -32,8 +47,13 @@ public class Player : MonoBehaviour {
 
     void isGrounded()
     {
-		RaycastHit2D hit = Physics2D.Raycast(transform.position+coll.bounds.extents, -Vector2.up,  coll.bounds.extents.y+0.2f);
-		Debug.DrawRay(transform.position+new Vector3(coll.bounds.extents.x, 0), -Vector2.up*(0.2f));
+		
+
+		RaycastHit2D hit=Physics2D.BoxCast(transform.position+coll.bounds.extents,
+								new Vector3(coll.bounds.extents.x*2, 0.1F),
+								0, Vector3.down,coll.bounds.extents.y+0.2f);
+//		RaycastHit2D hit = Physics2D.Raycast(transform.position+coll.bounds.extents, -Vector2.up,  coll.bounds.extents.y+0.2f);
+//		Debug.DrawRay(transform.position+new Vector3(coll.bounds.extents.x, 0), -Vector2.up*(0.2f));
 
 		RaycastHit2D staircheckr = Physics2D.Raycast(transform.position+new Vector3(coll.bounds.extents.x, 0), -Vector2.up + Vector2.right, Mathf.Sqrt(Mathf.Pow(coll.bounds.extents.y, 2) + Mathf.Pow(coll.bounds.extents.x, 2)) + 0.5f, layermask);
 
@@ -49,6 +69,11 @@ public class Player : MonoBehaviour {
         {
             onStairs = false;
         }
+
+		if(rb.velocity.y>0){
+			grounded=false;
+			return;
+		}
 
 		grounded=hit;
 
@@ -70,6 +95,8 @@ public class Player : MonoBehaviour {
 
     // Update is called once per frame
     void Update () {
+		if(ignore) return;
+
         isGrounded();
 
         rb.constraints = RigidbodyConstraints2D.FreezeRotation;
@@ -95,20 +122,32 @@ public class Player : MonoBehaviour {
 
 		if (Input.GetKey("right") && (!onLadder||hit))
         {
-            transform.Translate(speed * Vector2.right * Time.deltaTime);
+			if(onStairs)
+				transform.Translate(speed * Vector2.right * Time.deltaTime);
+			rb.velocity=new Vector2(speed, rb.velocity.y);
             faceRight = true;
-        }
+		}else if (Input.GetKey("left") && (!onLadder||hit))
+		{
+			if(onStairs)
+				transform.Translate(speed * Vector2.left * Time.deltaTime);
+			rb.velocity=new Vector2(-speed, rb.velocity.y);
+			faceRight = false;
+		}else{
+			rb.velocity=new Vector2(0, rb.velocity.y);
+		}
+
+		if(Input.GetKey("right")&&Input.GetKey("left")){
+			rb.velocity=new Vector2(0, rb.velocity.y);
+		}
 
 		if (Input.GetKeyDown("space") && (grounded||hit))
         {
             rb.velocity = Vector2.up * jumpSpeed;
+			GetComponent<PlayerAnimationController>().jumping=true;
+			grounded=false;
         }
 
-		if (Input.GetKey("left") && (!onLadder||hit))
-		{
-	        transform.Translate(speed * Vector2.left * Time.deltaTime);
-	    	faceRight = false;
-        }
+
 
         if (Input.GetKey("up") && onLadder)
         {
@@ -164,24 +203,33 @@ public class Player : MonoBehaviour {
             rb.isKinematic = false;
             onLadder = false;
         }
+
+		if (other.gameObject.tag == "Ledge"){
+			rb.velocity=new Vector2(0,0);
+		}
     }
 
     void OnTriggerStay2D(Collider2D other)
     {
+		GetComponent<PlayerAnimationController>().ledge=false;
         if (other.gameObject.tag == "Ledge")
         {
             if (other.gameObject.transform.position.x >= transform.position.x &&
             Input.GetKey("right") && !grounded)
             {
-                transform.Translate(Vector2.up * 2 * Time.deltaTime);
-                transform.Translate(Vector2.right * Time.deltaTime);
+//                transform.Translate(Vector2.up * 2 * Time.deltaTime);
+				rb.velocity=new Vector2(1,4);
+				GetComponent<PlayerAnimationController>().ledge=true;
+//                transform.Translate(Vector2.right * Time.deltaTime);
             }
 
             if (other.gameObject.transform.position.x <= transform.position.x &&
             Input.GetKey("left") && !grounded)
             {
-                transform.Translate(Vector2.up * 2 * Time.deltaTime);
-                transform.Translate(Vector2.left * Time.deltaTime);
+				rb.velocity=new Vector2(-1,4);
+				GetComponent<PlayerAnimationController>().ledge=true;
+//                transform.Translate(Vector2.up * 2 * Time.deltaTime);
+//                transform.Translate(Vector2.left * Time.deltaTime);
             }
         }
 

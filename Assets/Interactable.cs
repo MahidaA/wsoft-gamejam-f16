@@ -5,6 +5,7 @@ public class Interactable : MonoBehaviour {
     //This should encompass doors, sewer grates and whatever else you can open/close
 
     bool state; //true if someone is within the trigger
+	private Player p;
     // Use this for initialization
     void Start()
     {
@@ -21,6 +22,8 @@ public class Interactable : MonoBehaviour {
 
 			if(GetComponent<Distraction>()!=null)
             	GetComponent<Distraction>().isVisualDistraction = !GetComponent<Distraction>().isVisualDistraction;
+
+//			p.GetComponent<PlayerAnimationController>().anim.SetTrigger("Interact");
         }
     }
 
@@ -29,6 +32,7 @@ public class Interactable : MonoBehaviour {
         if (other.gameObject.tag == "Player")
         {
             state = true;
+			p=other.GetComponent<Player>();
         }
     }
 

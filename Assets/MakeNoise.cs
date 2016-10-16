@@ -5,13 +5,22 @@ using System.Collections;
 public class MakeNoise : MonoBehaviour {
 
 	bool state; //true if someone is within the trigger
+	private Player p;
 
 	// Update is called once per frame
 	void Update () {
 		if (Input.GetKeyDown("e") && state)
 		{
-			GetComponent<Distraction>().distract();
+			
+			StartCoroutine(waitThenDistract());
+			p.disable(1.5F);
+			p.GetComponent<PlayerAnimationController>().anim.SetTrigger("Interact");
 		}
+	}
+
+	private IEnumerator waitThenDistract(){
+		yield return new WaitForSecondsRealtime(1.5F);
+		GetComponent<Distraction>().distract();
 	}
 
 	void OnTriggerEnter2D(Collider2D other)
@@ -19,6 +28,7 @@ public class MakeNoise : MonoBehaviour {
 		if (other.gameObject.tag == "Player")
 		{
 			state = true;
+			p=other.GetComponent<Player>();
 		}
 	}
 
