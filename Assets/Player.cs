@@ -9,7 +9,7 @@ public class Player : MonoBehaviour {
     Collider2D coll;
     bool faceRight;
     public bool grounded;
-    bool onLadder;
+    private bool onLadder;
     int layermask;
     public bool onStairs;
 
@@ -50,20 +50,22 @@ public class Player : MonoBehaviour {
             onStairs = false;
         }
 
-        if (!hit)
-        {
-            grounded = false;
-            return;
-        }
+		grounded=hit;
 
-        if (hit.transform.tag == "Platform" || hit.transform.tag == "pcol")
-        {
-            grounded = true;
-        }
-        else
-        {
-            grounded = false;
-        }
+//        if (!hit)
+//        {
+//            grounded = false;
+//            return;
+//        }
+//
+//		if (hit.transform.tag == "Platform" || hit.transform.tag == "pcol" || hit.transform.tag=="Platform_NonSolid")
+//        {
+//            grounded = true;
+//        }
+//        else
+//        {
+//            grounded = false;
+//        }
     }
 
     // Update is called once per frame
@@ -150,13 +152,6 @@ public class Player : MonoBehaviour {
             other.GetComponent<Collider2D>().isTrigger = false;
         }
 
-        if (other.gameObject.tag == "Ladder")
-        {
-            rb.isKinematic = true;
-            onLadder = true;
-			ladderX=other.transform.position.x+other.bounds.extents.x-coll.bounds.extents.x;
-        }
-
 		if(other.GetComponent<Enemy>()!=null){
 			GameObject.FindObjectOfType<Game>().gameOver();
 		}
@@ -189,6 +184,15 @@ public class Player : MonoBehaviour {
                 transform.Translate(Vector2.left * Time.deltaTime);
             }
         }
+
+		if (other.gameObject.tag == "Ladder")
+		{
+			if(Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.DownArrow)){
+				rb.isKinematic = true;
+				onLadder = true;
+				ladderX=other.transform.position.x+other.bounds.extents.x-coll.bounds.extents.x;
+			}
+		}
     }
  
 }
