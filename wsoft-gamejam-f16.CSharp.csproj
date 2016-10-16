@@ -69,6 +69,8 @@
     <Compile Include="Assets\Austin\camScript.cs" />
     <Compile Include="Assets\BreakOnKey.cs" />
     <Compile Include="Assets\BreakableWindow.cs" />
+    <Compile Include="Assets\Custom Level Scripts\Level 2\EnemyAlert.cs" />
+    <Compile Include="Assets\Custom Level Scripts\Level 3\ModifyPatrolPathOnNoise.cs" />
     <Compile Include="Assets\Distraction.cs" />
     <Compile Include="Assets\Enemies\Enemy\BeginPatrolAfterNoise.cs" />
     <Compile Include="Assets\Enemies\Enemy\Enemy.cs" />
@@ -83,8 +85,10 @@
     <Compile Include="Assets\Game.cs" />
     <Compile Include="Assets\Interactable.cs" />
     <Compile Include="Assets\LadderBehavior.cs" />
+    <Compile Include="Assets\LedgeScript.cs" />
     <Compile Include="Assets\MakeNoise.cs" />
     <Compile Include="Assets\MakeVisualDistraction.cs" />
+    <Compile Include="Assets\NextLevel.cs" />
     <Compile Include="Assets\Player.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\SyntaxTree\UnityVS\2015\UnityVS.CSharp.targets" />
